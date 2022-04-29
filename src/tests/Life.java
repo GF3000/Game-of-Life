@@ -4,7 +4,6 @@ import stdlib.*;
 import gens.*;
 import java.awt.Font;
 
-import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
 
 /**
  * Versión del Juego de la Vida.
@@ -28,6 +27,10 @@ public class Life {
     static String filename;
     static boolean loop;
     static double salto_de_linea;
+    static boolean siguiente_paso;
+    static long millisUltimoPaso;
+    static int tiempoBucle;
+    static boolean menuConfiguracion;
 
     /**
      * 
@@ -80,7 +83,7 @@ public class Life {
         Life.canvas.clear(Draw.BLACK);
 
         Life.canvas.setFont(new Font("Mi fuente", Font.PLAIN, 30));
-        int centro = Life.gen.size()/2;
+        double centro = Life.gen.size()*0.55;
         
         //Título
         Life.canvas.setPenColor(Draw.BOOK_RED);
@@ -91,14 +94,18 @@ public class Life {
 
         //Cuerpo de las instrucciones
         Life.canvas.text(Life.gen.size()/2, centro + 3.5*Life.salto_de_linea, "Instrucciones:");
-        Life.canvas.textLeft(1, centro + 2*Life.salto_de_linea, "Espacio o Flecha derecha = Evolucionar");
-        Life.canvas.textLeft(1, centro + Life.salto_de_linea, "Flecha izquierda = Involucionar");
-        Life.canvas.textLeft(1, centro , "Clickar sobre una celda = Cambiar su estado");
-        Life.canvas.textLeft(1, centro - Life.salto_de_linea , "R (Reiniciar) = Generación en negro");
-        Life.canvas.textLeft(1, centro -2*Life.salto_de_linea, "T (Texto) = Generación por archivo de texto");
-        Life.canvas.textLeft(1, centro -3*Life.salto_de_linea, "A (Aleatorio) = Generación aleatoria");
-        Life.canvas.textLeft(1, centro -4*Life.salto_de_linea, "I (Instrucciones) = Abre este menú con instrucciones");
-        Life.canvas.text(Life.gen.size()/2, centro -6*Life.salto_de_linea, "Empiece con una generación inicial (R, T, A)");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro + 2*Life.salto_de_linea, "Espacio o Flecha derecha = Evolucionar");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro + Life.salto_de_linea, "Flecha izquierda = Involucionar");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro , "Clickar sobre una celda = Cambiar su estado");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro - Life.salto_de_linea , "R (Reiniciar) = Generación en negro");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro -2*Life.salto_de_linea, "T (Texto) = Generación por archivo de texto");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro -3*Life.salto_de_linea, "A (Aleatorio) = Generación aleatoria");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro -4*Life.salto_de_linea, "I (Instrucciones) = Abre este menú con instrucciones");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro -5*Life.salto_de_linea, "B (Bucle) = Actica / Desactiva bucle");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro -6*Life.salto_de_linea, "C (Configuración) = Abre menú de configuración");
+  
+
+        Life.canvas.text(Life.gen.size()/2, salto_de_linea, "Empiece con una generación inicial (R, T, A)");
 
         Life.canvas.show();
 
@@ -170,38 +177,15 @@ public class Life {
         Life.done = Life.life.endOfGame();
 
     }
-    public static void main(String[] args) {
 
-
-        //Iniaciliación de variables
-        filename = ".\\files\\acorn.life";
-        gen = new Gen(filename);
-        gen = new Gen (gen.size());
-        life = new LifeHistory(gen);
-        canvas = new Draw("Life´s Game - Guillermo Franco");
-        listener = new Listener();
-        canvasSize = 800;
-        done = false;
-        loop = false;
-        boolean siguiente_paso = false;
-        long millisUltimoPaso = System.currentTimeMillis();
-        salto_de_linea = (double)(Life.gen.size())/15; 
-        
-        //Inicializacion del canvas
-        canvas.enableDoubleBuffering();
-        canvas.setCanvasSize(canvasSize, canvasSize);
-        canvas.setXscale(0, gen.size());
-        canvas.setYscale(0, gen.size());
-        canvas.setPenColor(Draw.WHITE);
-        canvas.addListener(listener);
-
-        //Empieza en el menú de instrucciones
-        listener.keyTyped('i');
-
+    /**
+     * Método Bucle: 
+     * Evoluciona de forma automatica cuando la variable bulcle = true;
+     */
+    static void bucle() {
         while (true){
-            System.out.print("");
+            System.out.print(""); //Si no se pone no funciona
             if (loop){
-                //System.out.println(millisUltimoPaso);
                 if (siguiente_paso){
                     siguiente_paso = false;
                     if (!Life.done){
@@ -217,7 +201,7 @@ public class Life {
                         millisUltimoPaso = System.currentTimeMillis();
 
                 }else{
-                    if (System.currentTimeMillis() - millisUltimoPaso > 5){
+                    if (System.currentTimeMillis() - millisUltimoPaso > tiempoBucle){
                         siguiente_paso = true;
 
                     }
@@ -230,6 +214,91 @@ public class Life {
             }
         }
 
+    }
+
+    /**
+     * Abre pantalla de configuración
+     */
+    static void configuracion(){
+        Life.canvas.clear(Draw.BLACK);
+
+        Life.canvas.setFont(new Font("Mi fuente", Font.PLAIN, 30));
+        double centro = Life.gen.size()/2;
+        salto_de_linea = (double)(Life.gen.size())/15;
+        canvas.setXscale(0, gen.size());
+        canvas.setYscale(0, gen.size());
+        
+        //Título
+        Life.canvas.setPenColor(Draw.BOOK_RED);
+        Life.canvas.filledRectangle(Life.gen.size()/2, Life.gen.size()-1.5*Life.salto_de_linea,Life.gen.size()/2+1 , 1.25*Life.salto_de_linea);
+        Life.canvas.setPenColor(Draw.WHITE);
+        Life.canvas.text(Life.gen.size()/2, Life.gen.size()-Life.salto_de_linea, "El Juego de la Vida - JH. Conway");
+        Life.canvas.text(Life.gen.size()/2,Life. gen.size()-2*Life.salto_de_linea, "Configuración");
+
+        //Cuerpo de las instrucciones
+        Life.canvas.text(Life.gen.size()/2, centro + 3.5*Life.salto_de_linea, "Parámateros:");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro + 2*Life.salto_de_linea, "Utilice las flechas para cambiar el tamaño");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro + Life.salto_de_linea, "Tamaño = " + gen.size());
+
+        Life.canvas.text(Life.gen.size()/2, centro -6*Life.salto_de_linea, "Pulse I para salir");
+
+        Life.canvas.show();
+
+
+    }
+    /**
+     * Aumenta en 1 el tamaño de la matriz
+     */
+    static void aumentarTamanno(){
+
+        gen = new Gen (gen.size()+1);
+        life = new LifeHistory(gen);
+        
+
+    }
+    
+    /**
+     * Disminuye en 1 el tamaño de la matriz
+     */
+    static void disminuirTamanno(){
+        gen = new Gen (gen.size()-1);
+        life = new LifeHistory(gen);
+        
+    }
+    public static void main(String[] args) {
+
+        //Parámetros controlabes
+        filename = ".\\files\\bg.life";
+        canvasSize = 800;
+        tiempoBucle = 20;
+
+        //Iniaciliación automática de variables
+        gen = new Gen(filename);
+        gen = new Gen (gen.size());
+        life = new LifeHistory(gen);
+        canvas = new Draw("Life´s Game - Guillermo Franco");
+        listener = new Listener();
+        done = false;
+        loop = false;
+        siguiente_paso = false;
+        millisUltimoPaso = System.currentTimeMillis();
+        salto_de_linea = (double)(Life.gen.size())/15;
+        menuConfiguracion = false; 
+
+        
+
+        //Inicializacion del canvas
+        canvas.enableDoubleBuffering();
+        canvas.setCanvasSize(canvasSize, canvasSize);
+        canvas.setXscale(0, gen.size());
+        canvas.setYscale(0, gen.size());
+        canvas.setPenColor(Draw.WHITE);
+        canvas.addListener(listener);
+
+        //Empieza en el menú de instrucciones
+        listener.keyTyped('i');
+        bucle();
+        
     }
     
     
@@ -272,11 +341,18 @@ class Listener implements DrawListener{
         if (c == 'r') Life.reiniciar();
         if (c == 'a') Life.aleatorio();
         if (c == 't') Life.generacionPorTexto();
-        if (c == 'i') Life.pantallaInstrucciones();
-        if (c == 'b'){
-            //System.out.println(Life.loop);
-            Life.loop = !Life.loop;
-            }    
+        if (c == 'i'){
+            Life.pantallaInstrucciones();
+            Life.menuConfiguracion = false;
+        }
+        if (c == 'b') Life.loop = !Life.loop;
+        if (c == 'c') {
+            if(!Life.menuConfiguracion){
+                Life.configuracion();
+                Life.menuConfiguracion = true;
+            }
+        }
+            
 
     }
 
@@ -285,6 +361,14 @@ class Listener implements DrawListener{
 
         if (keycode == 32 || keycode == 39) Life.siguiente(); //Flecha deracha y espacio
         if (keycode == 37) Life.anterior(); //Flecha izquierda
+        if (keycode == 38) {
+            Life.aumentarTamanno(); //Flecha arriba
+            Life.configuracion();
+        }
+        if (keycode == 40) {
+            Life.disminuirTamanno(); //Flecha arriba
+            Life.configuracion();
+        }
        
     }
 
