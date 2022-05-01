@@ -10,8 +10,6 @@ import java.awt.Font;
  * Se ha utilizado la librería Stdlib para la lectura de archivos y la GUI
  * Se ha utilizado java.awt.Font para la personalización de fuentes
  * Se han utilizado EventListeners y programación orientada a eventos.
- * FUTURAS VERSIONES:
- * +Incluir una función para que entre en bucle y avance de forma automática
  * @author Guillermo Franco Gimeno.
  * @version 29/04/2022
  */
@@ -65,9 +63,10 @@ public class Life {
 
         Life.done = false;
         Gen nuevaGen = new Gen(Life.filename);
-        ILifeHistory nuevaLife = new LifeHistory(nuevaGen);
+        ILifeHistory nuevaLife = new LifeHistory(nuevaGen); 
         Life.gen = nuevaGen;
         Life.life = nuevaLife;
+        reiniciarGraficos();
         Life.canvas.setPenColor(Draw.WHITE);
         Life.canvas.clear();
         Life.life.current().pintar(Life.canvas);
@@ -117,8 +116,10 @@ public class Life {
     static void aleatorio(){
 
         Life.done = false;
+        Life.menuConfiguracion = false;
         Gen nuevaGen = new Gen(Life.gen.size(), Life.gen.size());
         ILifeHistory nuevaLife = new LifeHistory(nuevaGen);
+        reiniciarGraficos();
         Life.gen = nuevaGen;
         Life.life = nuevaLife;
         Life.canvas.setPenColor(Draw.WHITE);
@@ -137,6 +138,7 @@ public class Life {
         Life.done = false;
         Gen nuevaGen = new Gen(Life.gen.size());
         ILifeHistory nuevaLife = new LifeHistory(nuevaGen);
+        reiniciarGraficos();
         Life.gen = nuevaGen;
         Life.life = nuevaLife;
         Life.canvas.setPenColor(Draw.WHITE);
@@ -216,6 +218,14 @@ public class Life {
 
     }
 
+    static void reiniciarGraficos(){
+
+        
+        salto_de_linea = (double)(Life.gen.size())/15;
+        canvas.setXscale(0, gen.size());
+        canvas.setYscale(0, gen.size());
+        canvas.show();
+    }
     /**
      * Abre pantalla de configuración
      */
@@ -224,9 +234,7 @@ public class Life {
 
         Life.canvas.setFont(new Font("Mi fuente", Font.PLAIN, 30));
         double centro = Life.gen.size()/2;
-        salto_de_linea = (double)(Life.gen.size())/15;
-        canvas.setXscale(0, gen.size());
-        canvas.setYscale(0, gen.size());
+        reiniciarGraficos();
         
         //Título
         Life.canvas.setPenColor(Draw.BOOK_RED);
@@ -237,8 +245,11 @@ public class Life {
 
         //Cuerpo de las instrucciones
         Life.canvas.text(Life.gen.size()/2, centro + 3.5*Life.salto_de_linea, "Parámateros:");
-        Life.canvas.textLeft(Life.salto_de_linea/2, centro + 2*Life.salto_de_linea, "Utilice las flechas para cambiar el tamaño");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro + 2*Life.salto_de_linea, "Arriba / abajo para cambiar el tamaño");
         Life.canvas.textLeft(Life.salto_de_linea/2, centro + Life.salto_de_linea, "Tamaño = " + gen.size());
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro , "Izquierda / derecha para cambiar la velocidad del bucle");
+        Life.canvas.textLeft(Life.salto_de_linea/2, centro - Life.salto_de_linea, "Velocidad = " + tiempoBucle);
+
 
         Life.canvas.text(Life.gen.size()/2, centro -6*Life.salto_de_linea, "Pulse I para salir");
 
@@ -359,8 +370,21 @@ class Listener implements DrawListener{
     @Override
     public void keyPressed(int keycode) {
 
-        if (keycode == 32 || keycode == 39) Life.siguiente(); //Flecha deracha y espacio
-        if (keycode == 37) Life.anterior(); //Flecha izquierda
+        if (keycode == 32 || keycode == 39){ //Flecha deracha y espacio
+             
+            if (!Life.menuConfiguracion)Life.siguiente();
+            else {
+                Life.tiempoBucle++;
+                Life.configuracion();
+            }
+        }
+        if (keycode == 37){ //Flecha izquierda
+            if (!Life.menuConfiguracion) Life.anterior();
+            else{
+                 Life.tiempoBucle--;
+                 Life.configuracion();
+            }
+        }
         if (keycode == 38) {
             Life.aumentarTamanno(); //Flecha arriba
             Life.configuracion();
