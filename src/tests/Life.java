@@ -30,8 +30,44 @@ public class Life {
     static int tiempoBucle;
     static boolean menuConfiguracion;
 
+
+    public static void main(String[] args) {
+
+        //Parámetros controlabes
+        filename = ".\\files\\bg.life";
+        canvasSize = 800;
+        tiempoBucle = 20;
+
+        //Iniaciliación automática de variables
+        gen = new Gen(filename);
+        gen = new Gen (gen.size());
+        life = new LifeHistory(gen);
+        canvas = new Draw("Life´s Game - Guillermo Franco");
+        listener = new Listener();
+        done = false;
+        loop = false;
+        siguiente_paso = false;
+        millisUltimoPaso = System.currentTimeMillis();
+        salto_de_linea = (double)(Life.gen.size())/15;
+        menuConfiguracion = false; 
+
+        
+
+        //Inicializacion del canvas
+        canvas.enableDoubleBuffering();
+        canvas.setCanvasSize(canvasSize, canvasSize);
+        canvas.setXscale(0, gen.size());
+        canvas.setYscale(0, gen.size());
+        canvas.setPenColor(Draw.WHITE);
+        canvas.addListener(listener);
+
+        //Empieza en el menú de instrucciones
+        listener.keyTyped('i');
+        bucle();
+        
+    }
+
     /**
-     * 
      * @param tiempo Tiempo en ms que tardará en devolver true
      * @return Devuelve true si ha pasado el tiempo
      */
@@ -276,43 +312,7 @@ public class Life {
         life = new LifeHistory(gen);
         
     }
-    public static void main(String[] args) {
-
-        //Parámetros controlabes
-        filename = ".\\files\\bg.life";
-        canvasSize = 800;
-        tiempoBucle = 20;
-
-        //Iniaciliación automática de variables
-        gen = new Gen(filename);
-        gen = new Gen (gen.size());
-        life = new LifeHistory(gen);
-        canvas = new Draw("Life´s Game - Guillermo Franco");
-        listener = new Listener();
-        done = false;
-        loop = false;
-        siguiente_paso = false;
-        millisUltimoPaso = System.currentTimeMillis();
-        salto_de_linea = (double)(Life.gen.size())/15;
-        menuConfiguracion = false; 
-
         
-
-        //Inicializacion del canvas
-        canvas.enableDoubleBuffering();
-        canvas.setCanvasSize(canvasSize, canvasSize);
-        canvas.setXscale(0, gen.size());
-        canvas.setYscale(0, gen.size());
-        canvas.setPenColor(Draw.WHITE);
-        canvas.addListener(listener);
-
-        //Empieza en el menú de instrucciones
-        listener.keyTyped('i');
-        bucle();
-        
-    }
-    
-    
 }
 
 class Listener implements DrawListener{

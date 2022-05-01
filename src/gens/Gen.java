@@ -5,10 +5,10 @@ import stdlib.In;
 
 /**
  * Implementación de IGen proporciona para la elaboración de la práctica de Programación 2
- * Se ha modificado la interfaz IGen para incluir algunas funciones extras
+ * Se ha añadido la función contarVivas y print
  * Se utiliza la librería Stdlib para la lectura de archivos y pintar sobre un lienzo
  * FUTURAS MEJORAS:
- * +La generación debe será toroidal conectando los bordes entre sí
+ * +La generación será toroidal conectando los bordes entre sí
  * @author Guillermo Franco Gimeno
  * @version 29/04/2022
  */

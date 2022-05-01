@@ -58,6 +58,7 @@ public class LifeHistory implements ILifeHistory {
     }
     /**
      * El juego acabará si una generación es igual a la anterior o a la anterior de la anterior pues hay estructuras que se repiten ciclicamente
+     * @return Juego acabado
      */
     @Override
     public boolean endOfGame() {
