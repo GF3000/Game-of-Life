@@ -1,4 +1,4 @@
-##About the project
+## About the project
 
 This is my version of Conway's Game of Life. It was the result from one project for CS degree at Universidad Politécnica de Madrid.
 
