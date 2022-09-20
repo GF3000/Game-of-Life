@@ -1,3 +1,8 @@
+##About the project
+
+This is my version of Conway's Game of Life. It was the result from one project for CS degree at Universidad Politécnica de Madrid.
+
+
 ## Getting Started
 
 Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
